@@ -57,21 +57,65 @@ instance JSON → QUBO → QAOA samples → feasibility decoding → exact route
 
 ## Setup and run
 
-### Interactive local dashboard
+### Start a local server (Windows, macOS, or Linux)
 
-After installing the requirements below, run `python app/server.py --open`, or
-double-click `app/start.cmd` on Windows. You can also open
-<http://127.0.0.1:8765>. The dashboard includes a 3D route view with animated vans,
-solver comparisons, manual customer assignments, and real QAOA experiments with
-live energy updates. New experiments stay in the app session and do not overwrite
-the submission results. The map uses synthetic coordinates; van playback is
-illustrative, not a traffic or travel-time simulation. Sampler measurements are
-stochastic, so repeated quantum runs can differ. No extra packages or runtime
-internet connection are needed. Stop the server with Ctrl+C.
+Use **Python 3.12** (the verified version). Open a terminal in this repository's
+root folder, where `requirements.txt` and the `app` folder are located.
+
+1. Create the environment once:
+
+   ```sh
+   python -m venv .venv
+   ```
+
+2. Activate it for the current terminal:
+
+   **Windows PowerShell:**
+
+   ```powershell
+   .\.venv\Scripts\Activate.ps1
+   ```
+
+   **Windows Command Prompt:**
+
+   ```bat
+   .venv\Scripts\activate.bat
+   ```
+
+   **macOS / Linux:**
+
+   ```sh
+   source .venv/bin/activate
+   ```
+
+3. Install the dependencies once:
+
+   ```sh
+   python -m pip install -r requirements.txt
+   ```
+
+4. Start the software with this same command on any supported device:
+
+   ```sh
+   python app/server.py
+   ```
+
+5. The terminal prints a **City planner** link for the server it just started.
+   Open that generated link in a browser on the same device. Keep the terminal
+   open while using the app. Press **Ctrl+C** to stop the server.
+
+For later sessions, activate the existing environment and run `python app/server.py`
+again. Add `--open` to open the browser automatically, or `--port 9000` to choose a
+specific port. No source edits or device-specific URL are required.
+
+The dashboard includes animated 3D vans, solver comparisons, automatic/manual load
+allocation, and real QAOA experiments. New experiments stay in the server session
+and do not overwrite submission results. Van playback is illustrative, not live GPS
+or a traffic simulation. Sampler measurements are stochastic, so reruns can differ.
 
 ### Pakistan city map
 
-Open <http://127.0.0.1:8765/city> after starting the local dashboard. Choose Islamabad,
+Open the generated **City planner** link after starting the server. Choose Islamabad,
 Lahore, or Peshawar; place a depot and delivery stops; set delivery loads; then solve.
 Custom scenarios support 1–40 deliveries and 1–8 vehicles with a shared depot.
 Every vehicle starts and returns there. Set vehicle capacity and each delivery's
@@ -118,16 +162,11 @@ Map attribution stays visible. Sources: [OpenFreeMap](https://openfreemap.org/),
 
 ### Terminal demo
 
-Use Python 3.10–3.12. On Windows PowerShell, set `$env:MPLBACKEND = "Agg"`
+With the environment above active, run the terminal-only benchmark if needed.
+On Windows PowerShell, set `$env:MPLBACKEND = "Agg"`
 before running the solver or demo to save figures without Tk window cleanup errors.
 
 ```bash
-python -m venv .venv
-# Windows:
-.venv\Scripts\activate
-# macOS/Linux:
-# source .venv/bin/activate
-pip install -r requirements.txt
 python -m src.run_demo
 ```
 

@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import argparse
+import errno
 from dataclasses import asdict
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
@@ -196,13 +197,25 @@ class Handler(BaseHTTPRequestHandler):
 
 def main():
     parser = argparse.ArgumentParser(description="Launch the local Quantum Last-Mile dashboard")
-    parser.add_argument("--port", type=int, default=8765)
+    parser.add_argument("--port", type=int, default=None, help="choose a port; otherwise use an available local port")
     parser.add_argument("--open", action="store_true", help="open the dashboard in your browser")
     args = parser.parse_args()
-    server = ThreadingHTTPServer(("127.0.0.1", args.port), Handler)
-    print(f"Quantum Last-Mile → http://127.0.0.1:{args.port}", flush=True)
+    if args.port is not None and not 0 <= args.port <= 65535:
+        parser.error("Port must be between 0 and 65535.")
+    ports = [args.port] if args.port is not None else range(8765,8785)
+    for port in ports:
+        try:
+            server = ThreadingHTTPServer(("127.0.0.1",port), Handler)
+            break
+        except OSError as exc:
+            if args.port is not None or exc.errno not in (errno.EADDRINUSE,10048):
+                raise
+    else:
+        parser.error("No available local port found. Choose one with --port.")
+    port = server.server_address[1]
+    print(f"\nLastmile local server is running.\n\n  City planner: http://127.0.0.1:{port}/city\n  Benchmarks:   http://127.0.0.1:{port}/\n\nOpen the city planner link in your browser. Keep this terminal open.\nPress Ctrl+C to stop the server.\n", flush=True)
     if args.open:
-        webbrowser.open(f"http://127.0.0.1:{args.port}/city")
+        webbrowser.open(f"http://127.0.0.1:{port}/city")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

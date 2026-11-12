@@ -40,7 +40,7 @@
     "3": 0.41933600000000004
   },
   "exact_eigen_match": true,
-  "brute_force_runtime_s": 0.0015402999997604638,
+  "brute_force_runtime_s": 0.0010699000049498864,
   "qaoa_total_runtime_s": 37.22,
   "mock": false
 }

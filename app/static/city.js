@@ -1,7 +1,7 @@
 import * as THREE from '/vendor/three.module.js';
 
 const $ = id => document.getElementById(id);
-const COLORS = ['#c5ed90','#81cbd4','#b9a4e3','#f2b88b','#e89bb5','#86b8ec','#e4d386','#9ed2ba'];
+const COLORS = ['#6398c8','#56a5a3','#d4a16c','#c88fa9','#8e9bc4','#b5ad70','#a394bb','#8ca88a'];
 const fmt = (v,d=2) => Number(v).toFixed(d);
 const empty = () => ({type:'FeatureCollection',features:[]});
 let presets, draft, scene=null, chosen=-1, roads=null, markers=[], busy=false, routeToken=0;
@@ -40,7 +40,7 @@ map.on('click',e=>{
 });
 
 function fit() {
-  const points=roads?roads.routes.flatMap(r=>r.geometry.coordinates):draft?.points;
+  const points=roads?[...roads.routes.flatMap(r=>r.geometry.coordinates),...(scene?.dropoffs||[]).map(d=>d.requested)]:draft?.points;
   if(!points?.length)return;const bounds=new maplibregl.LngLatBounds();points.forEach(p=>bounds.extend(p));
   map.fitBounds(bounds,{padding:{top:75,bottom:80,left:65,right:65},duration:900,maxZoom:15});
 }
@@ -60,18 +60,20 @@ function invalidate() {
   dropoffMarkers.forEach(m=>m.remove());dropoffMarkers=[];
   if(loaded)map.getSource('dropoff-links').setData(empty());
   markers.forEach((m,i)=>{if(!i)return;const el=m.getElement();el.classList.remove('inaccessible-stop');el.firstChild.textContent=String(i);el.title='';el.style.borderColor='';el.style.color='';el.querySelector('.marker-title').textContent=`${draft.demands[i-1]} units`;});
-  $('city-source').textContent='DRAFT · UNSOLVED';$('city-run').disabled=true;
+  $('city-source').textContent='Draft';$('city-run').disabled=true;
   $('city-count').textContent='0 results';$('city-candidates').innerHTML='<div class="empty-state">Scenario changed.<br>Solve again to compare fresh results.</div>';
   for(const id of ['model-distance','city-gap','city-objective','road-distance','road-duration'])$(id).textContent='—';
-  $('city-selection').textContent='Ready for your scenario';$('city-feasible').textContent='—';
+  $('city-selection').textContent='No plan selected';$('city-feasible').textContent='—';
   $('city-benchmark').innerHTML='— <small>straight-line km</small>';
-  $('city-insight').textContent='Exact means optimal for the team’s straight-line model, not for road travel time.';
+  $('city-insight').textContent='Model distance uses straight-line coordinates. Road estimates are shown separately.';
   $('city-job').textContent='Solve a scenario first.';
-  $('road-caption').textContent='Your solver chooses assignments and stop order. The road service only draws connections between those stops.';
+  $('road-caption').textContent='Routes follow the selected plan. Travel estimates exclude live traffic.';
+  $('access-adjustments').hidden=true;$('access-count').textContent='0';
+  $('allocation-summary').innerHTML=`${draft.allocation_mode==='manual'?'Manual':'Automatic'} <small>${draft.allocation_mode==='manual'?'selected vehicle assignments':'capacity-aware planning'}</small>`;
   $('city-vans').innerHTML='';
   $('load-total').textContent=`${draft.demands.reduce((a,b)=>a+b,0)} load units`;
   markers.forEach(m=>m.getElement().classList.remove('van-a','van-b'));
-  status('Locations or loads changed. Solve with your existing Python code.');
+  status('Scenario updated. Select Solve to calculate a plan.');
 }
 function usePreset(key) {
   draft={city:key,points:presets[key].points.map(p=>[...p]),demands:[3,2,3,1,2,1],fleet_size:2,capacity:7,allocation_mode:'auto',assignments:[0,1,0,1,0,1]};
@@ -87,6 +89,7 @@ function scenarioSummary(){
 }
 function deliveryFields(){
   const manual=draft.allocation_mode==='manual';
+  if(manual)document.querySelector('.delivery-details').open=true;
   $('loads').innerHTML=draft.demands.map((v,i)=>`<label for="load-${i}">Stop ${i+1}<input id="load-${i}" aria-label="Stop ${i+1} load" type="number" min="1" max="60" step="1" value="${v}">${manual?`<select aria-label="Stop ${i+1} vehicle" data-assign="${i}">${Array.from({length:draft.fleet_size},(_,j)=>`<option value="${j}" ${draft.assignments[i]===j?'selected':''}>Van ${String.fromCharCode(65+j)}</option>`).join('')}</select>`:''}</label>`).join('');
   $('loads').querySelectorAll('input').forEach((input,i)=>input.onchange=()=>{draft.demands[i]=Number(input.value);markStops();invalidate();});
   $('loads').querySelectorAll('[data-assign]').forEach(input=>input.onchange=()=>{draft.assignments[Number(input.dataset.assign)]=Number(input.value);invalidate();});
@@ -104,13 +107,13 @@ function resizeScenario(){
   deliveryFields();markStops();invalidate();return true;
 }
 function setBusy(value) {
-  busy=value;for(const id of ['city-select','placement','solve-city','city-preset','delivery-count','fleet-size','vehicle-capacity','allocation-mode'])$(id).disabled=value;
+  busy=value;for(const id of ['city-select','placement','solve-city','city-preset','delivery-count','fleet-size','vehicle-capacity','allocation-mode','new-scenario'])$(id).disabled=value;
   $('loads').querySelectorAll('input,select').forEach(i=>i.disabled=value);markers.forEach(m=>m.setDraggable(!value));
   $('city-run').disabled=value||!scene||!scene.quantum_enabled;
 }
 function candidates() {
   const rows=scene.candidates.map((r,i)=>({...r,index:i})).sort((a,b)=>a.true_route_length-b.true_route_length||a.index-b.index);
-  $('city-count').textContent=`${rows.length} results`;
+  $('city-count').textContent=`${rows.length} result${rows.length===1?'':'s'}`;
   $('city-candidates').innerHTML=rows.map(r=>`<button class="candidate ${r.index===chosen?'selected':''}" data-index="${r.index}" aria-pressed="${r.index===chosen}"><span class="candidate-head"><span class="candidate-name"><span class="${r.family}-mark">${r.family==='quantum'?'✳':'◇'}</span> ${r.label}</span><span class="candidate-km">${fmt(r.true_route_length)} <small>km</small></span></span><span class="candidate-foot"><span>MODEL DISTANCE</span><span>${r.family==='quantum'?fmt(r.prob_optimum*100,1)+'% P(opt)':fmt(r.runtime_s*1000,1)+' ms'}</span></span></button>`).join('');
   $('city-candidates').querySelectorAll('button').forEach(b=>b.onclick=()=>choose(Number(b.dataset.index)));
 }
@@ -136,21 +139,27 @@ function markDropoffs(){
     features.push({type:'Feature',properties:{},geometry:{type:'LineString',coordinates:[drop.requested,drop.location]}});
   }
   if(loaded)map.getSource('dropoff-links').setData({type:'FeatureCollection',features});
-  if(scene.dropoffs?.length)$('map-instruction').textContent=`${scene.dropoffs.length} destination(s) use road-access drop-offs. × marks the requested location; dashed links are off-road gaps.`;
+  $('access-count').textContent=String(scene.dropoffs?.length||0);
+  const adjustments=$('access-adjustments');adjustments.hidden=!scene.dropoffs?.length;
+  if(scene.dropoffs?.length){
+    adjustments.innerHTML='<h3>Road-access adjustments</h3>'+scene.dropoffs.map((d,i)=>`<div class="access-item"><div>Stop ${d.id} · ${d.kind==='depot_collection'?'Depot collection':'Road-side drop-off'}<small>${fmt(d.offset_m,0)} m from requested destination · parcel retained</small></div><button data-focus-drop="${i}">Locate ↗</button></div>`).join('');
+    adjustments.querySelectorAll('button').forEach(b=>b.onclick=()=>{const drop=scene.dropoffs[Number(b.dataset.focusDrop)];const bounds=new maplibregl.LngLatBounds().extend(drop.requested).extend(drop.location);map.fitBounds(bounds,{padding:90,duration:800,maxZoom:16});});
+  }
+  if(scene.dropoffs?.length)$('map-instruction').textContent=`${scene.dropoffs.length} road-access adjustment${scene.dropoffs.length===1?'':'s'}. × marks the requested destination; the numbered square is the collection point.`;
   else $('map-instruction').textContent='Drag stops to update delivery locations.';
 }
 async function choose(index) {
   if(!scene)return;chosen=index;selectedRow=scene.candidates[index];progress=0;roads=null;routePaths=[];vans.forEach(v=>v.visible=false);
   if(loaded)map.getSource('delivery-routes').setData(empty());
   candidates();solutionDetails(selectedRow);$('road-distance').textContent='—';$('road-duration').textContent='—';
-  $('road-caption').textContent='Drawing road connections in the Python solver’s exact stop order…';
+  $('road-caption').textContent='Loading street connections for the selected plan…';
   const token=++routeToken;
   try {
     const result=await api('/api/city/route',{id:scene.id,index});if(token!==routeToken)return;
     roads=result;routePaths=result.routes.map(r=>preparePath(r.geometry.coordinates));drawRoads();
     $('road-distance').textContent=fmt(result.distance_km)+' km';$('road-duration').textContent=fmt(result.duration_minutes,1)+' min';
-    $('road-caption').textContent=scene.dropoffs?.length?`${scene.dropoffs.length} road-access drop-off(s) · all ${scene.instance.demands.length} deliveries retained · dashed links are not drivable routes`:'Python stop order preserved · OSRM road connections · enlarged 3D vans for visibility · no live traffic';
-  } catch(e) {if(token!==routeToken)return;$('road-caption').textContent='Road visuals unavailable. Your Python solution and stop order are shown below.';notice(e.message);}
+    $('road-caption').textContent=scene.dropoffs?.length?`All ${scene.instance.demands.length} deliveries retained. Dashed links show off-road collection gaps.`:'Selected stop order preserved · illustrative vehicle scale · no live traffic';
+  } catch(e) {if(token!==routeToken)return;$('road-caption').textContent='Street connections unavailable. The selected plan remains available below.';notice(e.message);}
 }
 function drawRoads() {
   if(!loaded||!roads)return;
@@ -182,11 +191,14 @@ async function pollQuantum() {
     const result=await api('/api/city');if(!scene||result.scene?.id!==scene.id)return;scene=result.scene;
     const qs=scene.candidates.map((r,i)=>({...r,index:i})).filter(r=>r.family==='quantum');
     const best=qs.reduce((a,b)=>!a||b.prob_optimum>a.prob_optimum?b:a,null);
-    $('city-source').textContent='REAL QAOA + CLASSICAL';$('city-job').textContent=`Complete in ${fmt(job.elapsed,1)} s · ${qs.length} feasible quantum results.`;candidates();if(best)await choose(best.index);
+    $('city-source').textContent='QAOA + CLASSICAL';$('city-job').textContent=`Complete in ${fmt(job.elapsed,1)} s · ${qs.length} feasible quantum result${qs.length===1?'':'s'}.`;candidates();if(best)await choose(best.index);
   }catch(e){quantumPolling=false;setBusy(false);notice(e.message);}
 }
 $('city-run').onclick=async()=>{try{setBusy(true);$('city-toast').hidden=true;await api('/api/city/run',{id:scene.id,preset:$('city-preset').value});quantumPolling=true;pollQuantum();}catch(e){setBusy(false);notice(e.message);}};
 $('city-select').onchange=()=>usePreset($('city-select').value);
+$('new-scenario').onclick=()=>{$('city-toast').hidden=true;usePreset($('city-select').value);};
+$('workflow').onclick=()=>$('workflow-dialog').showModal();
+$('workflow-dialog').querySelector('.close').onclick=()=>$('workflow-dialog').close();
 for(const id of ['delivery-count','fleet-size','vehicle-capacity'])$(id).onchange=resizeScenario;
 $('allocation-mode').onchange=()=>{draft.allocation_mode=$('allocation-mode').value;if(selectedRow)draft.assignments=[...selectedRow.assignment];deliveryFields();invalidate();};
 $('placement').onchange=()=>{const i=$('placement').value;markers.forEach((m,j)=>m.getElement().classList.toggle('active-move',i!==''&&Number(i)===j));$('map-instruction').textContent=i===''?'Drag numbered stops to customize your scenario.':`Click the map to move ${i==='0'?'the depot':'stop '+i}.`;};
