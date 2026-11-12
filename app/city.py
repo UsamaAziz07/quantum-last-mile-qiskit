@@ -6,6 +6,7 @@ customers or reorders them. Road estimates are visual context, not solver costs.
 from __future__ import annotations
 
 from dataclasses import asdict
+from urllib.error import HTTPError
 import json
 import math
 import os
@@ -30,7 +31,7 @@ PRESETS = {
 }
 
 
-def geographic_instance(body):
+def geographic_instance(body, check_capacity=True):
     points = body.get("points")
     n = len(points)-1 if isinstance(points,list) else 0
     demands = body.get("demands", [3,2,3,1,2,1] if n == 6 else [1]*n)
@@ -50,11 +51,9 @@ def geographic_instance(body):
         if not (60 <= p[0] <= 78 and 23 <= p[1] <= 38):
             raise ValueError("Keep the demo locations within Pakistan's region.")
         clean.append(tuple(float(v) for v in p))
-    if len(set(clean)) != len(clean):
-        raise ValueError("Each depot and delivery location must be distinct.")
     if not isinstance(demands, list) or len(demands) != n or any(type(v) is not int or not 1 <= v <= 60 for v in demands):
         raise ValueError("Each delivery load must be an integer from 1 to 60.")
-    if sum(demands) > fleet_size * capacity or max(demands) > capacity:
+    if check_capacity and (sum(demands) > fleet_size * capacity or max(demands) > capacity):
         raise ValueError(f"Fleet capacity is {fleet_size * capacity} units; increase capacity or add vehicles.")
     lng0, lat0 = clean[0]
     # Local equirectangular projection in km, suitable for this neighborhood-sized
@@ -109,6 +108,82 @@ def instance_from_scene(scene):
     return Instance(**{**d,"depot":tuple(d["depot"]),"coords":tuple(tuple(p) for p in d["coords"]),"demands":tuple(d["demands"])})
 
 
+class RoadServiceError(RuntimeError):
+    def __init__(self, code, message):
+        super().__init__(message)
+        self.code = code
+
+
+def delivery_access(points):
+    """Retain every parcel, substituting a connected road-side pickup where needed.
+
+    Nearest-road candidates are tested for a round trip to the depot. This is an
+    input/accessibility adapter; road durations never enter the planning objective.
+    A bounded candidate search is not a proof of globally nearest pickup location.
+    """
+    def matrix(locations):
+        coords = ";".join(",".join(f"{v:.6f}" for v in p) for p in locations)
+        return provider_request("/table/v1/driving/"+coords+"?annotations=duration")
+    def nearest(point, count):
+        coords = ",".join(f"{v:.6f}" for v in point)
+        return provider_request(f"/nearest/v1/driving/{coords}?number={count}")["waypoints"]
+    try:
+        result = matrix(points)
+    except RoadServiceError as exc:
+        if exc.code != "NoSegment":
+            raise
+        result = None
+    depot_source = result["sources"][0] if result else nearest(points[0],1)[0]
+    if not depot_source or depot_source.get("distance",0)>500:
+        raise ValueError("The depot is inaccessible. Move it closer to a connected road.")
+    depot = depot_source.get("location",points[0])
+    adjusted = [p[:] for p in points]
+    dropoffs = []
+    for i, original in enumerate(points[1:],1):
+        source = result["sources"][i] if result else None
+        connected = result is not None and result["durations"][0][i] is not None and result["durations"][i][0] is not None
+        if source and connected and source.get("distance",0)<=150:
+            continue
+        fallback = False
+        pickup = source if source and connected else None
+        if pickup is None:
+            for count in (8,32):
+                try:
+                    candidates = nearest(original,count)
+                except RoadServiceError as exc:
+                    if exc.code != "NoSegment":
+                        raise
+                    candidates = []
+                if not candidates:
+                    break
+                connections = matrix([depot,*[p["location"] for p in candidates]])
+                usable = [p for j,p in enumerate(candidates,1) if connections["durations"][0][j] is not None and connections["durations"][j][0] is not None]
+                if usable:
+                    pickup = min(usable,key=lambda p:p.get("distance",float("inf")))
+                    break
+        if pickup is None:
+            # Keep the parcel in the manifest rather than silently dropping it.
+            # The UI explicitly labels depot collection, never 'nearest road'.
+            pickup = {"location":depot,"distance":None}
+            fallback = True
+        adjusted[i] = list(pickup["location"])
+        gap = pickup.get("distance")
+        if gap is None:
+            gap = 6371008.8*math.hypot(math.radians(original[0]-adjusted[i][0])*math.cos(math.radians(original[1])),math.radians(original[1]-adjusted[i][1]))
+        dropoffs.append({"id":i,"requested":original,"location":adjusted[i],"offset_m":gap,
+                         "kind":"depot_collection" if fallback else "road_pickup",
+                         "reason":"Collect at depot: no nearby connected road candidate was found." if fallback else "Closest reachable road drop-off found; original destination has no direct road access."})
+    return adjusted, dropoffs
+
+
+def prepare_scene(body):
+    original, points, _ = geographic_instance(body)
+    adjusted, dropoffs = delivery_access(points)
+    scene = build_scene({**body,"points":adjusted})
+    scene.update(requested_points=points,delivery_demands=list(original.demands),dropoffs=dropoffs)
+    return scene
+
+
 def add_quantum(scene, quantum):
     inst = instance_from_scene(scene)
     rows = [r for r in scene["candidates"] if r["family"] != "quantum"]
@@ -135,13 +210,19 @@ def provider_request(path):
         LAST_REQUEST = time.monotonic()
         request = Request(PROVIDER + path, headers={"User-Agent":"QuantumLastMile/1.0 (https://github.com/UsamaAziz07/quantum-last-mile-qiskit)","Accept":"application/json"})
         try:
-            with urlopen(request, timeout=25) as response:
-                raw = response.read(5_000_001)
+            try:
+                with urlopen(request, timeout=25) as response:
+                    raw = response.read(5_000_001)
+            except HTTPError as error:
+                detail = json.loads(error.read())
+                raise RoadServiceError(detail.get("code","HTTPError"),detail.get("message",str(error))) from error
             if len(raw) > 5_000_000:
                 raise ValueError("Route response was too large.")
             result = json.loads(raw)
             if result.get("code") != "Ok":
-                raise ValueError(result.get("message", "No drivable route found."))
+                raise RoadServiceError(result.get("code","Unknown"),result.get("message", "No drivable route found."))
+        except RoadServiceError:
+            raise
         except Exception as exc:
             raise RuntimeError("Road visualization unavailable. The Python solution is still valid. " + str(exc)) from exc
         if len(CACHE) >= 128:

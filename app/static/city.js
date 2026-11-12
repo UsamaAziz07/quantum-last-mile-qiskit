@@ -9,6 +9,7 @@ let progress=0, playing=!matchMedia('(prefers-reduced-motion: reduce)').matches,
 let routePaths=[], selectedRow=null, quantumPolling=false;
 const vans=[];
 const vehicleMarkers=[];
+let dropoffMarkers=[];
 
 async function api(path,body) {
   const response=await fetch(path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
@@ -25,10 +26,13 @@ map.on('load',()=>{
   map.addSource('delivery-routes',{type:'geojson',data:empty()});
   map.addLayer({id:'route-glow',type:'line',source:'delivery-routes',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':['get','color'],'line-width':10,'line-opacity':.25}});
   map.addLayer({id:'route-line',type:'line',source:'delivery-routes',layout:{'line-cap':'round','line-join':'round'},paint:{'line-color':['get','color'],'line-width':4,'line-opacity':.95}});
+  map.addSource('dropoff-links',{type:'geojson',data:empty()});
+  map.addLayer({id:'dropoff-links-line',type:'line',source:'dropoff-links',paint:{'line-color':'#e58f86','line-width':2,'line-dasharray':[2,2]}});
   const building=map.getStyle().layers.find(l=>l['source-layer']==='building'&&l.source);
   if(building)map.addLayer({id:'city-buildings-3d',source:building.source,'source-layer':'building',type:'fill-extrusion',minzoom:14,paint:{'fill-extrusion-color':'#c5cbbb','fill-extrusion-height':['coalesce',['get','render_height'],['get','height'],8],'fill-extrusion-base':['coalesce',['get','render_min_height'],['get','min_height'],0],'fill-extrusion-opacity':.65}});
   createVehicleMarkers();
   if(roads)drawRoads();
+  markDropoffs();
 });
 map.on('click',e=>{
   const place=$('placement').value;if(place===''||busy)return;
@@ -53,6 +57,9 @@ function markStops() {
 function invalidate() {
   scene=null;chosen=-1;roads=null;selectedRow=null;routePaths=[];routeToken++;
   if(loaded)map.getSource('delivery-routes').setData(empty());vans.forEach(v=>v.visible=false);
+  dropoffMarkers.forEach(m=>m.remove());dropoffMarkers=[];
+  if(loaded)map.getSource('dropoff-links').setData(empty());
+  markers.forEach((m,i)=>{if(!i)return;const el=m.getElement();el.classList.remove('inaccessible-stop');el.firstChild.textContent=String(i);el.title='';el.style.borderColor='';el.style.color='';el.querySelector('.marker-title').textContent=`${draft.demands[i-1]} units`;});
   $('city-source').textContent='DRAFT · UNSOLVED';$('city-run').disabled=true;
   $('city-count').textContent='0 results';$('city-candidates').innerHTML='<div class="empty-state">Scenario changed.<br>Solve again to compare fresh results.</div>';
   for(const id of ['model-distance','city-gap','city-objective','road-distance','road-duration'])$(id).textContent='—';
@@ -83,6 +90,7 @@ function deliveryFields(){
   $('loads').innerHTML=draft.demands.map((v,i)=>`<label for="load-${i}">Stop ${i+1}<input id="load-${i}" aria-label="Stop ${i+1} load" type="number" min="1" max="60" step="1" value="${v}">${manual?`<select aria-label="Stop ${i+1} vehicle" data-assign="${i}">${Array.from({length:draft.fleet_size},(_,j)=>`<option value="${j}" ${draft.assignments[i]===j?'selected':''}>Van ${String.fromCharCode(65+j)}</option>`).join('')}</select>`:''}</label>`).join('');
   $('loads').querySelectorAll('input').forEach((input,i)=>input.onchange=()=>{draft.demands[i]=Number(input.value);markStops();invalidate();});
   $('loads').querySelectorAll('[data-assign]').forEach(input=>input.onchange=()=>{draft.assignments[Number(input.dataset.assign)]=Number(input.value);invalidate();});
+  $('loads').querySelectorAll('input,select').forEach(input=>input.disabled=busy);
   $('placement').innerHTML='<option value="">Pan & explore</option><option value="0">Depot</option>'+draft.demands.map((_,i)=>`<option value="${i+1}">Stop ${i+1}</option>`).join('');
 }
 function resizeScenario(){
@@ -113,6 +121,23 @@ function solutionDetails(row) {
   $('city-vans').innerHTML=Object.keys(row.routes).map((v,i)=>`<article class="van-card"><div class="van-top"><i class="dot" style="background:${COLORS[i]}"></i><strong>Van ${v}</strong><span>${row.loads[i]} / ${scene.instance.capacity} units</span></div><div class="van-route">${row.routes[v].length?'D '+row.routes[v].map(n=>'→ '+n).join(' ')+' → D':'At depot · no deliveries'}</div><div class="load-bar"><i style="width:${row.loads[i]/scene.instance.capacity*100}%;background:${COLORS[i]}"></i></div><div class="allocation-manifest">${row.routes[v].map(n=>`Stop ${n}: ${scene.instance.demands[n-1]} units`).join(' · ')||'Idle vehicle'}</div></article>`).join('');
   markers.forEach((m,i)=>{if(!i)return;const el=m.getElement();el.style.borderColor=COLORS[row.assignment[i-1]];el.style.color=COLORS[row.assignment[i-1]];});
   document.querySelector('.real-map-key').innerHTML=Object.keys(row.routes).map((v,i)=>`<span><i class="dot" style="background:${COLORS[i]}"></i>Van ${v}</span>`).join('');
+  markDropoffs();
+}
+function markDropoffs(){
+  dropoffMarkers.forEach(m=>m.remove());dropoffMarkers=[];
+  if(!scene)return;
+  const features=[];
+  for(const drop of scene.dropoffs||[]){
+    const el=markers[drop.id]?.getElement();
+    if(el){el.classList.add('inaccessible-stop');el.firstChild.textContent='×';el.title=`Stop ${drop.id}: ${drop.reason}`;el.querySelector('.marker-title').textContent=`${drop.id} · pickup ${fmt(drop.offset_m,0)} m away`;}
+    const pickup=document.createElement('div');pickup.className='stop-marker pickup-marker';pickup.textContent=String(drop.id);pickup.title=drop.reason;
+    const title=document.createElement('span');title.className='marker-title';title.textContent=drop.kind==='depot_collection'?'DEPOT COLLECTION':'DROP-OFF';pickup.append(title);
+    dropoffMarkers.push(new maplibregl.Marker({element:pickup}).setLngLat(drop.location).addTo(map));
+    features.push({type:'Feature',properties:{},geometry:{type:'LineString',coordinates:[drop.requested,drop.location]}});
+  }
+  if(loaded)map.getSource('dropoff-links').setData({type:'FeatureCollection',features});
+  if(scene.dropoffs?.length)$('map-instruction').textContent=`${scene.dropoffs.length} destination(s) use road-access drop-offs. × marks the requested location; dashed links are off-road gaps.`;
+  else $('map-instruction').textContent='Drag stops to update delivery locations.';
 }
 async function choose(index) {
   if(!scene)return;chosen=index;selectedRow=scene.candidates[index];progress=0;roads=null;routePaths=[];vans.forEach(v=>v.visible=false);
@@ -124,7 +149,7 @@ async function choose(index) {
     const result=await api('/api/city/route',{id:scene.id,index});if(token!==routeToken)return;
     roads=result;routePaths=result.routes.map(r=>preparePath(r.geometry.coordinates));drawRoads();
     $('road-distance').textContent=fmt(result.distance_km)+' km';$('road-duration').textContent=fmt(result.duration_minutes,1)+' min';
-    $('road-caption').textContent='Python stop order preserved · OSRM road connections · enlarged 3D vans for visibility · no live traffic';
+    $('road-caption').textContent=scene.dropoffs?.length?`${scene.dropoffs.length} road-access drop-off(s) · all ${scene.instance.demands.length} deliveries retained · dashed links are not drivable routes`:'Python stop order preserved · OSRM road connections · enlarged 3D vans for visibility · no live traffic';
   } catch(e) {if(token!==routeToken)return;$('road-caption').textContent='Road visuals unavailable. Your Python solution and stop order are shown below.';notice(e.message);}
 }
 function drawRoads() {
@@ -139,7 +164,7 @@ $('solve-city').onclick=async()=>{
   $('loads').querySelectorAll('[data-assign]').forEach(input=>draft.assignments[Number(input.dataset.assign)]=Number(input.value));
   if(Number($('delivery-count').value)!==draft.demands.length||Number($('fleet-size').value)!==draft.fleet_size||Number($('vehicle-capacity').value)!==draft.capacity){if(!resizeScenario())return;}
   draft.allocation_mode=$('allocation-mode').value;
-  setBusy(true);$('city-toast').hidden=true;status('Calculating assignments and routes…');
+  setBusy(true);$('city-toast').hidden=true;status('Checking road access, then calculating allocations and routes…');
   try {scene=await api('/api/city/scenario',draft);$('city-source').textContent=scene.allocation_mode==='manual'?'MANUAL ALLOCATION':scene.exact?'EXACT PLAN':'HEURISTIC PLAN';$('city-benchmark').innerHTML=scene.optimum==null?'— <small>heuristic / manual plan</small>':fmt(scene.optimum)+' <small>straight-line km</small>';status(scene.feasible_count?`${scene.feasible_count} feasible partitions evaluated. Loads allocated by route.`:'Capacity-feasible allocation generated.');$('city-job').textContent=scene.quantum_reason;candidates();await choose(0);}
   catch(e){notice(e.message);status('Scenario could not be solved. Check the stops and loads.');}
   finally{setBusy(false);}
@@ -218,7 +243,7 @@ function frame(time){
 }
 
 async function init(){setBusy(true);try{const result=await api('/api/city');presets=result.presets;usePreset('islamabad');
-  if(result.scene){usePreset(result.scene.city);scene=result.scene;draft={city:scene.city,points:scene.points.map(p=>[...p]),demands:[...scene.instance.demands],fleet_size:scene.fleet_size||2,capacity:scene.instance.capacity,allocation_mode:scene.allocation_mode||'auto',assignments:[...scene.candidates[0].assignment]};$('city-select').value=scene.city;$('delivery-count').value=draft.demands.length;$('fleet-size').value=draft.fleet_size;$('vehicle-capacity').value=draft.capacity;$('allocation-mode').value=draft.allocation_mode;deliveryFields();scenarioSummary();markStops();$('city-source').textContent='SESSION SOLUTIONS';$('city-benchmark').innerHTML=scene.optimum==null?'— <small>heuristic / manual</small>':fmt(scene.optimum)+' <small>straight-line km</small>';candidates();await choose(0);$('city-run').disabled=!scene.quantum_enabled;$('city-job').textContent=scene.quantum_reason;status('Scenario restored.');fit();}
+  if(result.scene){usePreset(result.scene.city);scene=result.scene;draft={city:scene.city,points:(scene.requested_points||scene.points).map(p=>[...p]),demands:[...scene.instance.demands],fleet_size:scene.fleet_size||2,capacity:scene.instance.capacity,allocation_mode:scene.allocation_mode||'auto',assignments:[...scene.candidates[0].assignment]};$('city-select').value=scene.city;$('delivery-count').value=draft.demands.length;$('fleet-size').value=draft.fleet_size;$('vehicle-capacity').value=draft.capacity;$('allocation-mode').value=draft.allocation_mode;deliveryFields();scenarioSummary();markStops();$('city-source').textContent='SESSION SOLUTIONS';$('city-benchmark').innerHTML=scene.optimum==null?'— <small>heuristic / manual</small>':fmt(scene.optimum)+' <small>straight-line km</small>';candidates();await choose(0);$('city-run').disabled=!scene.quantum_enabled;$('city-job').textContent=scene.quantum_reason;status('Scenario restored.');fit();}
   const job=await api('/api/job');if(job.status==='running'&&job.mode==='city'){quantumPolling=true;setBusy(true);pollQuantum();}
   }finally{if(!quantumPolling)setBusy(false);}
 }

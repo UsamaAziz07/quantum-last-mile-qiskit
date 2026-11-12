@@ -79,6 +79,16 @@ demand. Automatic allocation assigns stops and computes each van's required load
 from its route. Manual allocation preserves your stop-to-vehicle assignments,
 validates capacity, and calculates the stop order. Idle vehicles remain at the depot.
 
+Road-access checks happen before planning. When a destination is more than 150 m
+from a connected road, or its nearest road cannot connect back to the depot, the
+app finds a reachable road-side collection point. Every parcel remains in the plan
+and capacity calculations. The map shows the requested destination with a cross,
+the collection point separately, and a dashed off-road gap. Disconnected road
+segments trigger a bounded nearest-candidate search (up to 32 candidates); this
+does not certify the globally nearest possible collection location. If no nearby
+connected candidate is found, depot collection is labelled explicitly. Service
+outages are reported rather than treated as inaccessible deliveries.
+
 The original quantum comparison supports two vehicles and 2–8 deliveries, subject
 to a 14-qubit local simulation limit. Other fleet sizes use a classical adapter
 which reuses `src.classical.route_length` for tours of up to eight stops. Small

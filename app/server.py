@@ -143,7 +143,7 @@ class Handler(BaseHTTPRequestHandler):
             if not isinstance(body, dict):
                 return self.send_json({"error":"Expected a JSON object"}, 400)
             if self.path == "/api/city/scenario":
-                scene = city.build_scene(body)
+                scene = city.prepare_scene(body)
                 with LOCK:
                     if JOB["status"] == "running":
                         return self.send_json({"error":"Wait for the current experiment before changing scenarios."},409)

@@ -204,3 +204,53 @@ def test_two_van_custom_delivery_count_keeps_quantum_support():
     assert scene["fleet_size"] == 2
     assert scene["quantum_enabled"] is True
     assert len(scene["instance"]["coords"]) == 4
+
+
+def test_remote_delivery_uses_pickup_without_dropping_parcel(monkeypatch):
+    from app import city
+
+    points = [p[:] for p in city.PRESETS["islamabad"]["points"]]
+    pickup = [points[1][0]+.002,points[1][1]+.001]
+    adjusted = [p[:] for p in points]
+    adjusted[1] = pickup
+    drop = {"id":1,"requested":points[1],"location":pickup,"offset_m":210,"kind":"road_pickup","reason":"Road-side collection"}
+    monkeypatch.setattr(city,"delivery_access",lambda _: (adjusted,[drop]))
+    scene = city.prepare_scene({"city":"islamabad","points":points})
+    assert scene["requested_points"] == points
+    assert scene["points"][1] == pickup
+    assert len(scene["instance"]["demands"]) == 6
+    for row in scene["candidates"]:
+        assert sum(row["loads"]) == 12
+        assert sorted(c for route in row["routes"].values() for c in route) == list(range(1,7))
+
+
+def test_pickup_candidate_must_connect_both_ways_to_depot(monkeypatch):
+    from app import city
+
+    points = [[73,33],[73.01,33.01],[73.02,33.02]]
+    close = [73.011,33.011]
+    reachable = [73.012,33.012]
+    table_calls = []
+    def fake_request(path):
+        if path.startswith('/nearest/'):
+            return {"waypoints":[{"location":close,"distance":100},{"location":reachable,"distance":200}]}
+        table_calls.append(path)
+        if len(table_calls) == 1:
+            return {"sources":[{"location":p,"distance":0} for p in points],"durations":[[0,None,2],[None,0,None],[2,None,0]]}
+        return {"durations":[[0,None,2],[None,0,None],[2,None,0]]}
+    monkeypatch.setattr(city,"provider_request",fake_request)
+    adjusted, drops = city.delivery_access(points)
+    assert adjusted[1] == reachable
+    assert adjusted[2] == points[2]
+    assert drops[0]["offset_m"] == 200
+
+
+def test_pickup_service_failure_does_not_hide_or_skip_deliveries(monkeypatch):
+    import pytest
+    from app import city
+
+    def unavailable(_):
+        raise RuntimeError("Routing service unavailable")
+    monkeypatch.setattr(city,"provider_request",unavailable)
+    with pytest.raises(RuntimeError,match="unavailable"):
+        city.delivery_access([[73,33],[73.01,33.01]])

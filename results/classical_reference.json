@@ -70,7 +70,7 @@
       "feasible": true,
       "model_objective": 44.76910575008613,
       "true_route_length": 41.4972128429564,
-      "runtime_s": 0.0004341000021668151
+      "runtime_s": 0.0010793999972520396
     },
     {
       "method": "greedy",
@@ -85,7 +85,7 @@
       "feasible": true,
       "model_objective": 45.13923498835448,
       "true_route_length": 46.16208892937013,
-      "runtime_s": 0.0001229999979841523
+      "runtime_s": 0.0003015000038431026
     },
     {
       "method": "simulated_annealing",
@@ -100,7 +100,7 @@
       "feasible": true,
       "model_objective": 45.13923498835448,
       "true_route_length": 46.16208892937013,
-      "runtime_s": 0.015615900003467686
+      "runtime_s": 0.027659800005494617
     }
   ],
   "all_feasible": [
