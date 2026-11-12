@@ -1,0 +1,10 @@
+# Antigravity: resolve a WORKING set, test it, then freeze exact versions here.
+qiskit
+qiskit-aer
+qiskit-algorithms
+qiskit-optimization
+numpy
+scipy
+matplotlib
+pandas
+pytest

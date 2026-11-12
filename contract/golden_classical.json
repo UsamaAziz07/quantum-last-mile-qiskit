@@ -1,0 +1,426 @@
+{
+  "instance": "last_mile_demo_6_customers",
+  "n_feasible_canonical": 13,
+  "optimum_model": {
+    "assignment": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      0
+    ],
+    "model_objective": 44.76910575008613,
+    "true_route_length": 41.4972128429564,
+    "routes": {
+      "A": [
+        1,
+        4,
+        5,
+        6
+      ],
+      "B": [
+        2,
+        3
+      ]
+    },
+    "loads": [
+      7,
+      5
+    ]
+  },
+  "optimum_true": {
+    "assignment": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      0
+    ],
+    "model_objective": 44.76910575008613,
+    "true_route_length": 41.4972128429564,
+    "routes": {
+      "A": [
+        1,
+        4,
+        5,
+        6
+      ],
+      "B": [
+        2,
+        3
+      ]
+    },
+    "loads": [
+      7,
+      5
+    ]
+  },
+  "all_feasible": [
+    {
+      "assignment": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        0
+      ],
+      "model_objective": 58.40339264926614,
+      "true_route_length": 50.074097465738774,
+      "routes": {
+        "A": [
+          1,
+          2,
+          4,
+          6
+        ],
+        "B": [
+          3,
+          5
+        ]
+      },
+      "loads": [
+        7,
+        5
+      ]
+    },
+    {
+      "assignment": [
+        0,
+        0,
+        1,
+        0,
+        1,
+        1
+      ],
+      "model_objective": 45.166837977109594,
+      "true_route_length": 48.033000344772475,
+      "routes": {
+        "A": [
+          1,
+          2,
+          4
+        ],
+        "B": [
+          3,
+          5,
+          6
+        ]
+      },
+      "loads": [
+        6,
+        6
+      ]
+    },
+    {
+      "assignment": [
+        0,
+        0,
+        1,
+        1,
+        0,
+        1
+      ],
+      "model_objective": 50.19067902909973,
+      "true_route_length": 50.94171995186867,
+      "routes": {
+        "A": [
+          1,
+          2,
+          5
+        ],
+        "B": [
+          3,
+          4,
+          6
+        ]
+      },
+      "loads": [
+        7,
+        5
+      ]
+    },
+    {
+      "assignment": [
+        0,
+        0,
+        1,
+        1,
+        1,
+        0
+      ],
+      "model_objective": 47.17499863831865,
+      "true_route_length": 47.55321245506093,
+      "routes": {
+        "A": [
+          2,
+          1,
+          6
+        ],
+        "B": [
+          3,
+          4,
+          5
+        ]
+      },
+      "loads": [
+        6,
+        6
+      ]
+    },
+    {
+      "assignment": [
+        0,
+        0,
+        1,
+        1,
+        1,
+        1
+      ],
+      "model_objective": 48.88057958989305,
+      "true_route_length": 42.70678443917484,
+      "routes": {
+        "A": [
+          1,
+          2
+        ],
+        "B": [
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      "loads": [
+        5,
+        7
+      ]
+    },
+    {
+      "assignment": [
+        0,
+        1,
+        0,
+        0,
+        1,
+        1
+      ],
+      "model_objective": 47.452538821237255,
+      "true_route_length": 48.83590936388083,
+      "routes": {
+        "A": [
+          3,
+          1,
+          4
+        ],
+        "B": [
+          2,
+          5,
+          6
+        ]
+      },
+      "loads": [
+        7,
+        5
+      ]
+    },
+    {
+      "assignment": [
+        0,
+        1,
+        0,
+        1,
+        1,
+        0
+      ],
+      "model_objective": 45.13923498835448,
+      "true_route_length": 46.16208892937013,
+      "routes": {
+        "A": [
+          1,
+          3,
+          6
+        ],
+        "B": [
+          2,
+          4,
+          5
+        ]
+      },
+      "loads": [
+        7,
+        5
+      ]
+    },
+    {
+      "assignment": [
+        0,
+        1,
+        0,
+        1,
+        1,
+        1
+      ],
+      "model_objective": 48.08097265592441,
+      "true_route_length": 41.564130550126684,
+      "routes": {
+        "A": [
+          1,
+          3
+        ],
+        "B": [
+          2,
+          4,
+          5,
+          6
+        ]
+      },
+      "loads": [
+        6,
+        6
+      ]
+    },
+    {
+      "assignment": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "model_objective": 44.76910575008613,
+      "true_route_length": 41.4972128429564,
+      "routes": {
+        "A": [
+          1,
+          4,
+          5,
+          6
+        ],
+        "B": [
+          2,
+          3
+        ]
+      },
+      "loads": [
+        7,
+        5
+      ]
+    },
+    {
+      "assignment": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        1
+      ],
+      "model_objective": 45.215696165899956,
+      "true_route_length": 46.09517122219985,
+      "routes": {
+        "A": [
+          1,
+          4,
+          5
+        ],
+        "B": [
+          2,
+          3,
+          6
+        ]
+      },
+      "loads": [
+        6,
+        6
+      ]
+    },
+    {
+      "assignment": [
+        0,
+        1,
+        1,
+        0,
+        1,
+        0
+      ],
+      "model_objective": 49.730838309081555,
+      "true_route_length": 49.73214835565024,
+      "routes": {
+        "A": [
+          1,
+          4,
+          6
+        ],
+        "B": [
+          3,
+          2,
+          5
+        ]
+      },
+      "loads": [
+        5,
+        7
+      ]
+    },
+    {
+      "assignment": [
+        0,
+        1,
+        1,
+        1,
+        0,
+        0
+      ],
+      "model_objective": 45.32692669507672,
+      "true_route_length": 47.13339346754668,
+      "routes": {
+        "A": [
+          1,
+          5,
+          6
+        ],
+        "B": [
+          3,
+          2,
+          4
+        ]
+      },
+      "loads": [
+        6,
+        6
+      ]
+    },
+    {
+      "assignment": [
+        0,
+        1,
+        1,
+        1,
+        0,
+        1
+      ],
+      "model_objective": 60.715652734621486,
+      "true_route_length": 49.17449058851298,
+      "routes": {
+        "A": [
+          1,
+          5
+        ],
+        "B": [
+          3,
+          2,
+          4,
+          6
+        ]
+      },
+      "loads": [
+        5,
+        7
+      ]
+    }
+  ]
+}

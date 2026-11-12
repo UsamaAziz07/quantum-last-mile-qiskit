@@ -1,0 +1,121 @@
+[
+  {
+    "beta": 0,
+    "assignment": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      0
+    ],
+    "loads": [
+      7,
+      5
+    ],
+    "model_objective": 44.369105750086135,
+    "true_route_length": 41.4972128429564
+  },
+  {
+    "beta": 0.05,
+    "assignment": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      0
+    ],
+    "loads": [
+      7,
+      5
+    ],
+    "model_objective": 44.56910575008614,
+    "true_route_length": 41.4972128429564
+  },
+  {
+    "beta": 0.1,
+    "assignment": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      0
+    ],
+    "loads": [
+      7,
+      5
+    ],
+    "model_objective": 44.76910575008613,
+    "true_route_length": 41.4972128429564
+  },
+  {
+    "beta": 0.2,
+    "assignment": [
+      0,
+      0,
+      1,
+      0,
+      1,
+      1
+    ],
+    "loads": [
+      6,
+      6
+    ],
+    "model_objective": 45.166837977109594,
+    "true_route_length": 48.033000344772475
+  },
+  {
+    "beta": 0.5,
+    "assignment": [
+      0,
+      0,
+      1,
+      0,
+      1,
+      1
+    ],
+    "loads": [
+      6,
+      6
+    ],
+    "model_objective": 45.166837977109594,
+    "true_route_length": 48.033000344772475
+  },
+  {
+    "beta": 1,
+    "assignment": [
+      0,
+      0,
+      1,
+      0,
+      1,
+      1
+    ],
+    "loads": [
+      6,
+      6
+    ],
+    "model_objective": 45.166837977109594,
+    "true_route_length": 48.033000344772475
+  },
+  {
+    "beta": 2,
+    "assignment": [
+      0,
+      0,
+      1,
+      0,
+      1,
+      1
+    ],
+    "loads": [
+      6,
+      6
+    ],
+    "model_objective": 45.166837977109594,
+    "true_route_length": 48.033000344772475
+  }
+]

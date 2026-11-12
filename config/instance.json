@@ -1,0 +1,17 @@
+{
+  "name": "last_mile_demo_6_customers",
+  "description": "Synthetic last-mile delivery instance (coordinates in km, NOT real map data). Two natural clusters (east: 1-3, west: 4-6); east demand 8 > capacity 7, so capacity forces a split.",
+  "depot": [0.0, 0.0],
+  "customers": [
+    {"id": 1, "xy": [4.0, 3.0],   "demand": 3},
+    {"id": 2, "xy": [5.0, 5.0],   "demand": 2},
+    {"id": 3, "xy": [6.0, 2.0],   "demand": 3},
+    {"id": 4, "xy": [-4.0, 4.0],  "demand": 1},
+    {"id": 5, "xy": [-5.0, 1.0],  "demand": 2},
+    {"id": 6, "xy": [-3.0, -3.0], "demand": 1}
+  ],
+  "num_vehicles": 2,
+  "vehicle_capacity": 7,
+  "weights": {"alpha_distance": 1.0, "beta_balance": 0.1},
+  "seed": 42
+}

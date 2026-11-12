@@ -1,0 +1,787 @@
+{
+  "_mock": true,
+  "instance": "last_mile_demo_6_customers",
+  "num_qubits": 12,
+  "penalty": 50.0,
+  "exact_eigen": {
+    "assignment": [
+      0,
+      1,
+      1,
+      0,
+      0,
+      0
+    ],
+    "energy": -4.2,
+    "matches_model_optimum": true
+  },
+  "circuit": {
+    "depth": 60,
+    "num_qubits": 12,
+    "image": "results/qaoa_circuit.png"
+  },
+  "runs": [
+    {
+      "reps": 1,
+      "seed": 0,
+      "optimizer": "COBYLA",
+      "maxiter": 200,
+      "final_energy": -3.5,
+      "best_feasible_assignment": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "best_feasible_model_objective": 44.76910575008613,
+      "prob_feasible": 0.4,
+      "prob_optimum": 0.04,
+      "runtime_s": 5.0,
+      "energy_history": [
+        5.0,
+        4.85,
+        4.7,
+        4.55,
+        4.4,
+        4.25,
+        4.1,
+        3.95,
+        3.8,
+        3.65,
+        3.5,
+        3.35,
+        3.2,
+        3.05,
+        2.9,
+        2.75,
+        2.6,
+        2.45,
+        2.3,
+        2.15
+      ],
+      "top_samples": [
+        {
+          "bitstring": "011000010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "prob": 0.06,
+          "feasible": true,
+          "model_objective": 44.76910575008613
+        },
+        {
+          "bitstring": "010110010110",
+          "assignment": [
+            0,
+            1,
+            0,
+            1,
+            1,
+            0
+          ],
+          "prob": 0.03,
+          "feasible": true,
+          "model_objective": 45.13923498835448
+        },
+        {
+          "bitstring": "001011010110",
+          "assignment": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            1
+          ],
+          "prob": 0.02,
+          "feasible": true,
+          "model_objective": 45.166837977109594
+        },
+        {
+          "bitstring": "011001010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            0,
+            0,
+            1
+          ],
+          "prob": 0.015,
+          "feasible": true,
+          "model_objective": 45.215696165899956
+        },
+        {
+          "bitstring": "011100010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            1,
+            0,
+            0
+          ],
+          "prob": 0.012,
+          "feasible": true,
+          "model_objective": 45.32692669507672
+        },
+        {
+          "bitstring": "101010000000",
+          "assignment": [
+            1,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          "prob": 0.05,
+          "feasible": false,
+          "model_objective": null
+        }
+      ]
+    },
+    {
+      "reps": 1,
+      "seed": 1,
+      "optimizer": "COBYLA",
+      "maxiter": 200,
+      "final_energy": -3.5,
+      "best_feasible_assignment": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "best_feasible_model_objective": 44.76910575008613,
+      "prob_feasible": 0.4,
+      "prob_optimum": 0.04,
+      "runtime_s": 5.0,
+      "energy_history": [
+        5.0,
+        4.85,
+        4.7,
+        4.55,
+        4.4,
+        4.25,
+        4.1,
+        3.95,
+        3.8,
+        3.65,
+        3.5,
+        3.35,
+        3.2,
+        3.05,
+        2.9,
+        2.75,
+        2.6,
+        2.45,
+        2.3,
+        2.15
+      ],
+      "top_samples": [
+        {
+          "bitstring": "011000010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "prob": 0.06,
+          "feasible": true,
+          "model_objective": 44.76910575008613
+        },
+        {
+          "bitstring": "010110010110",
+          "assignment": [
+            0,
+            1,
+            0,
+            1,
+            1,
+            0
+          ],
+          "prob": 0.03,
+          "feasible": true,
+          "model_objective": 45.13923498835448
+        },
+        {
+          "bitstring": "001011010110",
+          "assignment": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            1
+          ],
+          "prob": 0.02,
+          "feasible": true,
+          "model_objective": 45.166837977109594
+        },
+        {
+          "bitstring": "011001010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            0,
+            0,
+            1
+          ],
+          "prob": 0.015,
+          "feasible": true,
+          "model_objective": 45.215696165899956
+        },
+        {
+          "bitstring": "011100010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            1,
+            0,
+            0
+          ],
+          "prob": 0.012,
+          "feasible": true,
+          "model_objective": 45.32692669507672
+        },
+        {
+          "bitstring": "101010000000",
+          "assignment": [
+            1,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          "prob": 0.05,
+          "feasible": false,
+          "model_objective": null
+        }
+      ]
+    },
+    {
+      "reps": 2,
+      "seed": 0,
+      "optimizer": "COBYLA",
+      "maxiter": 200,
+      "final_energy": -4.0,
+      "best_feasible_assignment": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "best_feasible_model_objective": 44.76910575008613,
+      "prob_feasible": 0.5,
+      "prob_optimum": 0.08,
+      "runtime_s": 10.0,
+      "energy_history": [
+        5.0,
+        4.85,
+        4.7,
+        4.55,
+        4.4,
+        4.25,
+        4.1,
+        3.95,
+        3.8,
+        3.65,
+        3.5,
+        3.35,
+        3.2,
+        3.05,
+        2.9,
+        2.75,
+        2.6,
+        2.45,
+        2.3,
+        2.15
+      ],
+      "top_samples": [
+        {
+          "bitstring": "011000010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "prob": 0.12,
+          "feasible": true,
+          "model_objective": 44.76910575008613
+        },
+        {
+          "bitstring": "010110010110",
+          "assignment": [
+            0,
+            1,
+            0,
+            1,
+            1,
+            0
+          ],
+          "prob": 0.06,
+          "feasible": true,
+          "model_objective": 45.13923498835448
+        },
+        {
+          "bitstring": "001011010110",
+          "assignment": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            1
+          ],
+          "prob": 0.04,
+          "feasible": true,
+          "model_objective": 45.166837977109594
+        },
+        {
+          "bitstring": "011001010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            0,
+            0,
+            1
+          ],
+          "prob": 0.03,
+          "feasible": true,
+          "model_objective": 45.215696165899956
+        },
+        {
+          "bitstring": "011100010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            1,
+            0,
+            0
+          ],
+          "prob": 0.024,
+          "feasible": true,
+          "model_objective": 45.32692669507672
+        },
+        {
+          "bitstring": "101010000000",
+          "assignment": [
+            1,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          "prob": 0.05,
+          "feasible": false,
+          "model_objective": null
+        }
+      ]
+    },
+    {
+      "reps": 2,
+      "seed": 1,
+      "optimizer": "COBYLA",
+      "maxiter": 200,
+      "final_energy": -4.0,
+      "best_feasible_assignment": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "best_feasible_model_objective": 44.76910575008613,
+      "prob_feasible": 0.5,
+      "prob_optimum": 0.08,
+      "runtime_s": 10.0,
+      "energy_history": [
+        5.0,
+        4.85,
+        4.7,
+        4.55,
+        4.4,
+        4.25,
+        4.1,
+        3.95,
+        3.8,
+        3.65,
+        3.5,
+        3.35,
+        3.2,
+        3.05,
+        2.9,
+        2.75,
+        2.6,
+        2.45,
+        2.3,
+        2.15
+      ],
+      "top_samples": [
+        {
+          "bitstring": "011000010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "prob": 0.12,
+          "feasible": true,
+          "model_objective": 44.76910575008613
+        },
+        {
+          "bitstring": "010110010110",
+          "assignment": [
+            0,
+            1,
+            0,
+            1,
+            1,
+            0
+          ],
+          "prob": 0.06,
+          "feasible": true,
+          "model_objective": 45.13923498835448
+        },
+        {
+          "bitstring": "001011010110",
+          "assignment": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            1
+          ],
+          "prob": 0.04,
+          "feasible": true,
+          "model_objective": 45.166837977109594
+        },
+        {
+          "bitstring": "011001010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            0,
+            0,
+            1
+          ],
+          "prob": 0.03,
+          "feasible": true,
+          "model_objective": 45.215696165899956
+        },
+        {
+          "bitstring": "011100010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            1,
+            0,
+            0
+          ],
+          "prob": 0.024,
+          "feasible": true,
+          "model_objective": 45.32692669507672
+        },
+        {
+          "bitstring": "101010000000",
+          "assignment": [
+            1,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          "prob": 0.05,
+          "feasible": false,
+          "model_objective": null
+        }
+      ]
+    },
+    {
+      "reps": 3,
+      "seed": 0,
+      "optimizer": "COBYLA",
+      "maxiter": 200,
+      "final_energy": -4.5,
+      "best_feasible_assignment": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "best_feasible_model_objective": 44.76910575008613,
+      "prob_feasible": 0.6,
+      "prob_optimum": 0.12,
+      "runtime_s": 15.0,
+      "energy_history": [
+        5.0,
+        4.85,
+        4.7,
+        4.55,
+        4.4,
+        4.25,
+        4.1,
+        3.95,
+        3.8,
+        3.65,
+        3.5,
+        3.35,
+        3.2,
+        3.05,
+        2.9,
+        2.75,
+        2.6,
+        2.45,
+        2.3,
+        2.15
+      ],
+      "top_samples": [
+        {
+          "bitstring": "011000010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "prob": 0.18,
+          "feasible": true,
+          "model_objective": 44.76910575008613
+        },
+        {
+          "bitstring": "010110010110",
+          "assignment": [
+            0,
+            1,
+            0,
+            1,
+            1,
+            0
+          ],
+          "prob": 0.09,
+          "feasible": true,
+          "model_objective": 45.13923498835448
+        },
+        {
+          "bitstring": "001011010110",
+          "assignment": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            1
+          ],
+          "prob": 0.06,
+          "feasible": true,
+          "model_objective": 45.166837977109594
+        },
+        {
+          "bitstring": "011001010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            0,
+            0,
+            1
+          ],
+          "prob": 0.045,
+          "feasible": true,
+          "model_objective": 45.215696165899956
+        },
+        {
+          "bitstring": "011100010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            1,
+            0,
+            0
+          ],
+          "prob": 0.036,
+          "feasible": true,
+          "model_objective": 45.32692669507672
+        },
+        {
+          "bitstring": "101010000000",
+          "assignment": [
+            1,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          "prob": 0.05,
+          "feasible": false,
+          "model_objective": null
+        }
+      ]
+    },
+    {
+      "reps": 3,
+      "seed": 1,
+      "optimizer": "COBYLA",
+      "maxiter": 200,
+      "final_energy": -4.5,
+      "best_feasible_assignment": [
+        0,
+        1,
+        1,
+        0,
+        0,
+        0
+      ],
+      "best_feasible_model_objective": 44.76910575008613,
+      "prob_feasible": 0.6,
+      "prob_optimum": 0.12,
+      "runtime_s": 15.0,
+      "energy_history": [
+        5.0,
+        4.85,
+        4.7,
+        4.55,
+        4.4,
+        4.25,
+        4.1,
+        3.95,
+        3.8,
+        3.65,
+        3.5,
+        3.35,
+        3.2,
+        3.05,
+        2.9,
+        2.75,
+        2.6,
+        2.45,
+        2.3,
+        2.15
+      ],
+      "top_samples": [
+        {
+          "bitstring": "011000010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            0,
+            0,
+            0
+          ],
+          "prob": 0.18,
+          "feasible": true,
+          "model_objective": 44.76910575008613
+        },
+        {
+          "bitstring": "010110010110",
+          "assignment": [
+            0,
+            1,
+            0,
+            1,
+            1,
+            0
+          ],
+          "prob": 0.09,
+          "feasible": true,
+          "model_objective": 45.13923498835448
+        },
+        {
+          "bitstring": "001011010110",
+          "assignment": [
+            0,
+            0,
+            1,
+            0,
+            1,
+            1
+          ],
+          "prob": 0.06,
+          "feasible": true,
+          "model_objective": 45.166837977109594
+        },
+        {
+          "bitstring": "011001010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            0,
+            0,
+            1
+          ],
+          "prob": 0.045,
+          "feasible": true,
+          "model_objective": 45.215696165899956
+        },
+        {
+          "bitstring": "011100010110",
+          "assignment": [
+            0,
+            1,
+            1,
+            1,
+            0,
+            0
+          ],
+          "prob": 0.036,
+          "feasible": true,
+          "model_objective": 45.32692669507672
+        },
+        {
+          "bitstring": "101010000000",
+          "assignment": [
+            1,
+            0,
+            1,
+            0,
+            1,
+            0
+          ],
+          "prob": 0.05,
+          "feasible": false,
+          "model_objective": null
+        }
+      ]
+    }
+  ]
+}
