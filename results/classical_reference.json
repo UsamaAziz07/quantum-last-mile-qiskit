@@ -70,7 +70,7 @@
       "feasible": true,
       "model_objective": 44.76910575008613,
       "true_route_length": 41.4972128429564,
-      "runtime_s": 0.0016941000940278172
+      "runtime_s": 0.0008998000048450194
     },
     {
       "method": "greedy",
@@ -85,7 +85,7 @@
       "feasible": true,
       "model_objective": 45.13923498835448,
       "true_route_length": 46.16208892937013,
-      "runtime_s": 0.00021780002862215042
+      "runtime_s": 0.0002294999940204434
     },
     {
       "method": "simulated_annealing",
@@ -100,7 +100,7 @@
       "feasible": true,
       "model_objective": 45.13923498835448,
       "true_route_length": 46.16208892937013,
-      "runtime_s": 0.0206623999401927
+      "runtime_s": 0.026261799997882918
     }
   ],
   "all_feasible": [
@@ -141,7 +141,7 @@
         1,
         1
       ],
-      "model_objective": 45.1668379771096,
+      "model_objective": 45.166837977109594,
       "true_route_length": 48.033000344772475,
       "routes": {
         "A": [
@@ -169,7 +169,7 @@
         0,
         1
       ],
-      "model_objective": 50.190679029099734,
+      "model_objective": 50.19067902909973,
       "true_route_length": 50.94171995186867,
       "routes": {
         "A": [
@@ -309,7 +309,7 @@
         1,
         1
       ],
-      "model_objective": 48.080972655924406,
+      "model_objective": 48.08097265592441,
       "true_route_length": 41.564130550126684,
       "routes": {
         "A": [
@@ -421,7 +421,7 @@
         0,
         0
       ],
-      "model_objective": 45.326926695076715,
+      "model_objective": 45.32692669507672,
       "true_route_length": 47.13339346754668,
       "routes": {
         "A": [
@@ -449,7 +449,7 @@
         0,
         1
       ],
-      "model_objective": 60.71565273462149,
+      "model_objective": 60.715652734621486,
       "true_route_length": 49.17449058851298,
       "routes": {
         "A": [

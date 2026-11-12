@@ -57,6 +57,9 @@ instance JSON → QUBO → QAOA samples → feasibility decoding → exact route
 
 ## Setup and run
 
+Use Python 3.10–3.12. On Windows PowerShell, set `$env:MPLBACKEND = "Agg"`
+before running the solver or demo to save figures without Tk window cleanup errors.
+
 ```bash
 python -m venv .venv
 # Windows:
@@ -73,7 +76,7 @@ the checked-in schema fixtures with `python -m src.evaluate --mock`.
 ## Expected output
 
 The demo prints the exact route, QAOA route and gap, qubit count, probabilities for
-each repetition, and stage timings. The checked-in sample summary reports:
+each repetition, and stage timings. The checked-in integration summary reports:
 
 | Quantity | Value |
 |---|---:|
