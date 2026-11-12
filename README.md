@@ -109,5 +109,11 @@ are natural next steps.
 - **Fatima** — QUBO and quantum solver
 - **Khattak** — integration, evaluation, demo, and presentation assets
 
-We used Qiskit documentation for API guidance and credit the Qiskit project. AI
-assistants used: Antigravity/Codex. Report and video: `[link to be added]`.
+We used Qiskit documentation and tutorials as reference for API guidance and credit
+the Qiskit open-source project. AI coding assistants (Google Antigravity / Codex)
+assisted with code scaffolding, tests, and documentation; all formulations, results,
+and analysis were directed and verified by the team.
+
+- **Report:** [`docs/Report.docx`](docs/Report.docx)
+- **Video:** *[VIDEO_LINK — to be inserted by Usama before deadline]*
+- **Repository:** https://github.com/UsamaAziz07/quantum-last-mile-qiskit
