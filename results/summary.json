@@ -1,0 +1,46 @@
+{
+  "num_qubits": 12,
+  "circuit_depth": 60,
+  "optimum_model_assignment": [
+    0,
+    1,
+    1,
+    0,
+    0,
+    0
+  ],
+  "optimum_true_length": 41.4972128429564,
+  "best_qaoa_assignment": [
+    0,
+    1,
+    1,
+    0,
+    0,
+    0
+  ],
+  "best_qaoa_true_length": 41.4972128429564,
+  "qaoa_gap_pct": 0.0,
+  "prob_optimum_by_reps": {
+    "1": {
+      "mean": 0.04,
+      "max": 0.04
+    },
+    "2": {
+      "mean": 0.08,
+      "max": 0.08
+    },
+    "3": {
+      "mean": 0.12,
+      "max": 0.12
+    }
+  },
+  "prob_feasible_by_reps": {
+    "1": 0.4,
+    "2": 0.5,
+    "3": 0.6
+  },
+  "exact_eigen_match": true,
+  "brute_force_runtime_s": 0.004,
+  "qaoa_total_runtime_s": 60.0,
+  "mock": true
+}
