@@ -57,6 +57,57 @@ instance JSON → QUBO → QAOA samples → feasibility decoding → exact route
 
 ## Setup and run
 
+### Interactive local dashboard
+
+After installing the requirements below, run `python app/server.py --open`, or
+double-click `app/start.cmd` on Windows. You can also open
+<http://127.0.0.1:8765>. The dashboard includes a 3D route view with animated vans,
+solver comparisons, manual customer assignments, and real QAOA experiments with
+live energy updates. New experiments stay in the app session and do not overwrite
+the submission results. The map uses synthetic coordinates; van playback is
+illustrative, not a traffic or travel-time simulation. Sampler measurements are
+stochastic, so repeated quantum runs can differ. No extra packages or runtime
+internet connection are needed. Stop the server with Ctrl+C.
+
+### Pakistan city map
+
+Open <http://127.0.0.1:8765/city> after starting the local dashboard. Choose Islamabad,
+Lahore, or Peshawar; place a depot and delivery stops; set delivery loads; then solve.
+Custom scenarios support 1–40 deliveries and 1–8 vehicles with a shared depot.
+Every vehicle starts and returns there. Set vehicle capacity and each delivery's
+demand. Automatic allocation assigns stops and computes each van's required load
+from its route. Manual allocation preserves your stop-to-vehicle assignments,
+validates capacity, and calculates the stop order. Idle vehicles remain at the depot.
+
+The original quantum comparison supports two vehicles and 2–8 deliveries, subject
+to a 14-qubit local simulation limit. Other fleet sizes use a classical adapter
+which reuses `src.classical.route_length` for tours of up to eight stops. Small
+custom scenarios enumerate feasible fleet partitions; larger ones use labelled
+capacity-aware assignment and route heuristics. Heuristic and manual plans are
+never presented as certified global optima. Quantum controls are disabled when
+the original model cannot represent the scenario.
+The app projects the neighborhood coordinates into kilometres and calls the existing
+`src.classical` and `src.quantum_solver` implementations. QAOA's supported automatic
+QUBO penalty option handles the different city-coordinate scale. Frozen benchmark
+files and submission results are not changed by city experiments.
+
+**The existing Python code chooses the assignment and stop order.** OpenFreeMap
+provides streets; OSRM's Route endpoint only supplies road geometry through that
+fixed stop order. No external optimization or stop-reordering API is used. The
+optimizer still minimizes the original straight-line compactness/balance model;
+road distance and estimated duration are labelled separately and are not guaranteed
+road-optimal or traffic-aware. Stops may snap to nearby roads.
+
+MapLibre GL JS 5.12.0 and Three.js 0.160.1 are bundled with licenses in
+`app/static/vendor/`. City maps and road visuals need internet; no API keys or payment
+details are needed. Public services receive the displayed/requested locations. OSRM
+requests are cached in memory and globally limited to one per 1.1 seconds; heavy use
+requires your own routing service. Set `QLOGISTICS_OSRM_URL` to its base URL if needed.
+Map attribution stays visible. Sources: [OpenFreeMap](https://openfreemap.org/),
+[OSRM](https://project-osrm.org/), [usage policy](https://routing.openstreetmap.de/about.html).
+
+### Terminal demo
+
 Use Python 3.10–3.12. On Windows PowerShell, set `$env:MPLBACKEND = "Agg"`
 before running the solver or demo to save figures without Tk window cleanup errors.
 
@@ -81,8 +132,8 @@ each repetition, and stage timings. The checked-in integration summary reports:
 | Quantity | Value |
 |---|---:|
 | Exact optimum route length | 41.4972 |
-| Best QAOA route length | 50.9417 |
-| QAOA gap | 22.76% |
+| Best QAOA route length | 41.4972 |
+| QAOA gap | 0.00% |
 | Qubits | 12 |
 | Exact-eigen match | true |
 

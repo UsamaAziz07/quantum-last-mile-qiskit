@@ -11,36 +11,36 @@
   ],
   "optimum_true_length": 41.4972128429564,
   "best_qaoa_assignment": [
+    0,
     1,
     1,
     0,
     0,
-    1,
     0
   ],
-  "best_qaoa_true_length": 50.94171995186867,
-  "qaoa_gap_pct": 22.759376984315583,
+  "best_qaoa_true_length": 41.4972128429564,
+  "qaoa_gap_pct": 0.0,
   "prob_optimum_by_reps": {
     "1": {
-      "mean": 0.029687400000000003,
-      "max": 0.038086
+      "mean": 0.034375,
+      "max": 0.043945
     },
     "2": {
-      "mean": 0.039257600000000004,
-      "max": 0.068359
+      "mean": 0.0345704,
+      "max": 0.06543
     },
     "3": {
-      "mean": 0.030078,
-      "max": 0.040039
+      "mean": 0.033202999999999996,
+      "max": 0.042969
     }
   },
   "prob_feasible_by_reps": {
-    "1": 0.3960936,
-    "2": 0.44101559999999995,
-    "3": 0.41425799999999996
+    "1": 0.3896486,
+    "2": 0.43027360000000003,
+    "3": 0.41933600000000004
   },
   "exact_eigen_match": true,
-  "brute_force_runtime_s": 0.0009777000013855286,
-  "qaoa_total_runtime_s": 44.073,
+  "brute_force_runtime_s": 0.0015402999997604638,
+  "qaoa_total_runtime_s": 37.22,
   "mock": false
 }
