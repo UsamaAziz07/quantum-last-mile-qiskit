@@ -1,0 +1,22 @@
+flowchart LR
+    A["Instance JSON<br/>(customers, demands, capacity)"] --> B["Model Builder<br/>(QuadraticProgram)"]
+    B --> C["QUBO Converter<br/>(slack + penalty)"]
+    C --> D["Ising Hamiltonian"]
+    D --> E["QAOA Circuit<br/>(Qiskit + Aer simulator)"]
+    E <--> F["COBYLA Optimiser<br/>(classical loop)"]
+    E --> G["Sampled Bitstrings"]
+    G --> H["Decode & Feasibility<br/>(rejection / slack strip)"]
+    H --> I["Exact TSP per Van<br/>(held-out brute force)"]
+    A --> J["Classical Baselines<br/>(exact brute force, greedy sweep, SA)"]
+    I --> K["Evaluation<br/>(metrics, tables, plots)"]
+    J --> K
+
+    classDef classical fill:#dbeafe,stroke:#1e40af,stroke-width:2px,color:#1e3a8a;
+    classDef quantum fill:#f3e8ff,stroke:#6b21a8,stroke-width:2px,color:#581c87;
+    classDef optim fill:#fef3c7,stroke:#b45309,stroke-width:2px,color:#78350f;
+    classDef eval fill:#dcfce7,stroke:#15803d,stroke-width:2px,color:#14532d;
+
+    class A,B,H,I,J classical;
+    class C,D,E,G quantum;
+    class F optim;
+    class K eval;
